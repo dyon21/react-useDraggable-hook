@@ -1,5 +1,8 @@
 # react-useDraggable-hook
 
+![npm](https://img.shields.io/npm/v/use-draggable-hook?style=flat-square)
+![license](https://img.shields.io/npm/l/use-draggable-hook?style=flat-square)
+
 > 用于使 DOM 元素可跟随鼠标拖拽位移的 React Hooks.  
 > A React Hooks for making DOM elements translate with dragging
 
