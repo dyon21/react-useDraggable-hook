@@ -1,0 +1,58 @@
+{
+  "name": "use-draggable-hook",
+  "author": "Dyon",
+  "main": "./dist/useDraggable.js",
+  "version": "0.1.1",
+  "license": "MIT",
+  "keywords": [
+    "React Hooks",
+    "draggable"
+  ],
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dyon21/react-useDraggable-hook.git"
+  },
+  "dependencies": {
+    "react": "^17.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.8",
+    "@testing-library/react": "^11.2.3",
+    "@testing-library/user-event": "^12.6.0",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^12.19.12",
+    "@types/react": "^16.14.2",
+    "@types/react-dom": "^16.9.10",
+    "react-dom": "^17.0.1",
+    "react-scripts": "4.0.1",
+    "typescript": "^4.1.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build-example": "react-scripts build",
+    "build": "tsc ./src/useDraggable.ts -d --outDir ./dist",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
