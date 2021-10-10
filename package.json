@@ -1,8 +1,8 @@
 {
   "name": "use-draggable-hook",
-  "author": "Dyon",
+  "author": "dyon21",
   "main": "./dist/useDraggable.js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "keywords": [
     "React Hooks",
