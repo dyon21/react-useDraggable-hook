@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { clamp, getNearestScale } from './utils'
+
 export interface IOptions {
   /** use Event.preventDefault with the touchmove events */
   prevent?: boolean
@@ -16,6 +18,8 @@ export interface IOptions {
     x: { max: number; min: number }
     y: { max: number; min: number }
   }
+  /** position step size */
+  stepSize?: number
   /** start callback */
   onStart?: (
     target: React.RefObject<HTMLElement>,
@@ -46,10 +50,6 @@ export type TUseDraggable = <T extends HTMLElement>(
   setPosition: (position: [number, number], transition: string) => void
 }
 
-const clamp = (value: number, [min, max]: [number, number]): number => {
-  return Math.min(Math.max(value, min), max)
-}
-
 const useDraggable: TUseDraggable = <T extends HTMLElement>(
   options?: IOptions
 ) => {
@@ -64,6 +64,7 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
         x: { max: Infinity, min: -Infinity },
         y: { max: Infinity, min: -Infinity },
       },
+      stepSize: options?.stepSize ?? 0,
       setCSS: options?.setCSS ?? true,
       onStart: options?.onStart ?? function () {},
       onMove: options?.onMove ?? function () {},
@@ -79,6 +80,12 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
 
   const setTransform = useCallback(
     (position: [number, number], transition?: string) => {
+      if (opts.stepSize) {
+        position = [
+          getNearestScale(position[0], opts.stepSize),
+          getNearestScale(position[1], opts.stepSize),
+        ]
+      }
       prevPosition.current = position
       setPosition(position)
       if (ref.current && opts.setCSS) {
@@ -88,7 +95,7 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
         ref.current.style.transform = `translate3d(${position[0]}px, ${position[1]}px, 0)`
       }
     },
-    [opts.setCSS]
+    [opts.setCSS, opts.stepSize]
   )
   const handleStart = useCallback(
     (e: TouchEvent | MouseEvent) => {
@@ -140,12 +147,12 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
         opts.direction === 'horizontal'
           ? 0
           : clamp(y, [opts.maxDistance.y.min, opts.maxDistance.y.max])
-      prevPosition.current = [x, y]
-      opts.onMove(ref, [x, y], setTransform)
-      setPosition([x, y])
-      if (ref.current && opts.setCSS) {
-        ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`
+      if (opts.stepSize) {
+        x = getNearestScale(x, opts.stepSize)
+        y = getNearestScale(y, opts.stepSize)
       }
+      opts.onMove(ref, [x, y], setTransform)
+      setTransform([x, y])
     },
     [dragging, opts, setTransform]
   )

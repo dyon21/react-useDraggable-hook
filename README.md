@@ -44,6 +44,8 @@ export interface IOptions {
     x: { max: number; min: number }
     y: { max: number; min: number }
   }
+  /** position step size */
+  stepSize?: number
   /** start callback */
   onStart?: (
     target: React.RefObject<HTMLElement>,
