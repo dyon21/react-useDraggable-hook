@@ -93,6 +93,8 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
       if (target.current && opts.setCSS) {
         if (transition) {
           target.current.style.transition = transition
+        } else {
+          target.current.style.transition = ''
         }
         target.current.style.transform = `translate3d(${position[0]}px, ${position[1]}px, 0)`
       }
