@@ -15,8 +15,8 @@ export interface IOptions {
   setCSS?: boolean
   /** max dragging distance */
   maxDistance?: {
-    x: { max: number; min: number }
-    y: { max: number; min: number }
+    x?: { max?: number; min?: number }
+    y?: { max?: number; min?: number }
   }
   /** position step size */
   stepSize?: number
@@ -47,32 +47,34 @@ export type TUseDraggable = <T extends HTMLElement>(
   /** position state [x, y] */
   position: [number, number]
   /** function to set a new position value. */
-  setPosition: (position: [number, number], transition: string) => void
+  setPosition: (position: [number, number], transition?: string) => void
 }
-
+const defaultOptions = {
+  prevent: true,
+  touch: true,
+  mouse: true,
+  direction: 'both',
+  maxDistance: {
+    x: { max: Infinity, min: -Infinity },
+    y: { max: Infinity, min: -Infinity },
+  },
+  stepSize: 0,
+  setCSS: true,
+  onStart: function () {},
+  onMove: function () {},
+  onEnd: function () {},
+}
 const useDraggable: TUseDraggable = <T extends HTMLElement>(
   options?: IOptions
 ) => {
-  /** default options */
   const opts = useMemo(() => {
     return {
-      prevent: options?.prevent ?? true,
-      touch: options?.touch ?? true,
-      mouse: options?.mouse ?? true,
-      direction: options?.direction ?? 'both',
-      maxDistance: options?.maxDistance ?? {
-        x: { max: Infinity, min: -Infinity },
-        y: { max: Infinity, min: -Infinity },
-      },
-      stepSize: options?.stepSize ?? 0,
-      setCSS: options?.setCSS ?? true,
-      onStart: options?.onStart ?? function () {},
-      onMove: options?.onMove ?? function () {},
-      onEnd: options?.onEnd ?? function () {},
+      ...defaultOptions,
+      ...options,
     }
   }, [options])
 
-  const ref = useRef<T>(null)
+  const target = useRef<T>(null)
   const startXY = useRef<[number, number]>([0, 0])
   const prevPosition = useRef<[number, number]>([0, 0])
   const dragging = useRef<boolean>(false)
@@ -88,11 +90,11 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
       }
       prevPosition.current = position
       setPosition(position)
-      if (ref.current && opts.setCSS) {
+      if (target.current && opts.setCSS) {
         if (transition) {
-          ref.current.style.transition = transition
+          target.current.style.transition = transition
         }
-        ref.current.style.transform = `translate3d(${position[0]}px, ${position[1]}px, 0)`
+        target.current.style.transform = `translate3d(${position[0]}px, ${position[1]}px, 0)`
       }
     },
     [opts.setCSS, opts.stepSize]
@@ -100,7 +102,6 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
   const handleStart = useCallback(
     (e: TouchEvent | MouseEvent) => {
       const [prevX, prevY] = prevPosition.current
-      prevPosition.current = [prevX, prevY]
       let [x, y] = prevPosition.current
       if (e instanceof window.TouchEvent && opts.touch) {
         dragging.current = true
@@ -116,7 +117,7 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
         y = e.clientY - prevY
       } else return
       startXY.current = [x, y]
-      opts.onStart(ref, [x, y], setTransform)
+      opts.onStart(target, [x, y], setTransform)
     },
     [opts, setTransform]
   )
@@ -142,16 +143,22 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
       x =
         opts.direction === 'vertical'
           ? 0
-          : clamp(x, [opts.maxDistance.x.min, opts.maxDistance.x.max])
+          : clamp(x, [
+              opts.maxDistance?.x?.min ?? -Infinity,
+              opts.maxDistance?.x?.max ?? Infinity,
+            ])
       y =
         opts.direction === 'horizontal'
           ? 0
-          : clamp(y, [opts.maxDistance.y.min, opts.maxDistance.y.max])
+          : clamp(y, [
+              opts.maxDistance?.y?.min ?? -Infinity,
+              opts.maxDistance?.y?.max ?? Infinity,
+            ])
       if (opts.stepSize) {
         x = getNearestScale(x, opts.stepSize)
         y = getNearestScale(y, opts.stepSize)
       }
-      opts.onMove(ref, [x, y], setTransform)
+      opts.onMove(target, [x, y], setTransform)
       setTransform([x, y])
     },
     [dragging, opts, setTransform]
@@ -163,14 +170,14 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
         (e instanceof window.MouseEvent && e.button === 0 && opts.mouse)
       ) {
         dragging.current = false
-        opts.onEnd(ref, prevPosition.current, setTransform)
+        opts.onEnd(target, prevPosition.current, setTransform)
       }
     },
     [opts, setTransform]
   )
 
   useEffect(() => {
-    const node = ref.current
+    const node = target.current
     if (node) {
       if (opts.touch) {
         node.addEventListener('touchstart', handleStart)
@@ -200,9 +207,9 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
         }
       }
     }
-  }, [ref, opts, handleStart, handleMove, handleEnd])
+  }, [target, opts, handleStart, handleMove, handleEnd])
 
-  return { target: ref, position: position, setPosition: setTransform }
+  return { target, position, setPosition: setTransform }
 }
 
 export default useDraggable
