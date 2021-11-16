@@ -142,6 +142,12 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
         x = e.clientX - startX
         y = e.clientY - startY
       } else return
+
+      if (opts.stepSize) {
+        x = getNearestScale(x, opts.stepSize)
+        y = getNearestScale(y, opts.stepSize)
+      }
+
       x =
         opts.direction === 'vertical'
           ? 0
@@ -156,10 +162,6 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
               opts.maxDistance?.y?.min ?? -Infinity,
               opts.maxDistance?.y?.max ?? Infinity,
             ])
-      if (opts.stepSize) {
-        x = getNearestScale(x, opts.stepSize)
-        y = getNearestScale(y, opts.stepSize)
-      }
       opts.onMove(target, [x, y], setTransform)
       setTransform([x, y])
     },
