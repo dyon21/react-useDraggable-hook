@@ -3,10 +3,9 @@
 [![npm](https://img.shields.io/npm/v/use-draggable-hook?style=flat-square)](https://www.npmjs.com/package/use-draggable-hook)
 [![license](https://img.shields.io/npm/l/use-draggable-hook?style=flat-square)](https://github.com/dyon21/react-useDraggable-hook/blob/master/LICENSE)
 
-> 用于使 DOM 元素可跟随鼠标拖拽位移的 React Hooks.  
-> A React Hooks for making DOM elements translate with dragging
+> 用于使 DOM 元素可跟随鼠标拖拽位移的 React Hook。<br/>
+> A React Hook for making DOM elements translate with dragging.
 
-Try it on [Codesandbox](https://codesandbox.io/s/use-draggable-hook-demo-1y7s7?file=/src/App.tsx).
 
 ## Usage
 
@@ -25,11 +24,23 @@ function App() {
   )
 }
 
-export default App
-
 ```
-## Interface
+Try it on Codesandbox: 
+[[Simple example](https://codesandbox.io/s/use-draggable-hook-demo-1y7s7?file=/src/App.tsx)]
+[[Advanced example](https://codesandbox.io/s/use-draggable-options-yjl0m?file=/src/App.tsx)].
+
+## Interface & Options
 ```typescript
+export type TUseDraggable = <T extends HTMLElement>(
+  options?: IOptions
+) => {
+  /** target element ref  */
+  target: React.RefObject<T>
+  /** position state [x, y] */
+  position: [number, number]
+  /** function to set a new position value. */
+  setPosition: (position: [number, number], transition?: string) => void
+}
 export interface IOptions {
   /** use Event.preventDefault with the touchmove events */
   prevent?: boolean
@@ -43,8 +54,8 @@ export interface IOptions {
   setCSS?: boolean
   /** max dragging distance */
   maxDistance?: {
-    x: { max: number; min: number }
-    y: { max: number; min: number }
+    x?: { max?: number; min?: number }
+    y?: { max?: number; min?: number }
   }
   /** position step size */
   stepSize?: number
@@ -67,15 +78,20 @@ export interface IOptions {
     setPosition: (position: [number, number], transition?: string) => void
   ) => void
 }
-export type TUseDraggable = <T extends HTMLElement>(
-  options?: IOptions
-) => {
-  /** target element ref  */
-  target: React.RefObject<T>
-  /** position state [x, y] */
-  position: [number, number]
-  /** function to set a new position value. */
-  setPosition: (position: [number, number], transition: string) => void
+const defaultOptions = {
+  prevent: true,
+  touch: true,
+  mouse: true,
+  direction: 'both',
+  maxDistance: {
+    x: { max: Infinity, min: -Infinity },
+    y: { max: Infinity, min: -Infinity },
+  },
+  stepSize: 0,
+  setCSS: true,
+  onStart: function () {},
+  onMove: function () {},
+  onEnd: function () {},
 }
 
 ```
