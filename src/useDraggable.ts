@@ -19,7 +19,10 @@ export interface IOptions {
     y?: { max?: number; min?: number }
   }
   /** position step size */
-  stepSize?: number
+  stepSize?: number | {
+    x: number
+    y: number
+  }
   /** start callback */
   onStart?: (
     target: React.RefObject<HTMLElement>,
@@ -84,8 +87,8 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
     (position: [number, number], transition?: string) => {
       if (opts.stepSize) {
         position = [
-          getNearestScale(position[0], opts.stepSize),
-          getNearestScale(position[1], opts.stepSize),
+          getNearestScale(position[0], typeof opts.stepSize === 'object' ? opts.stepSize.x : opts.stepSize),
+          getNearestScale(position[1], typeof opts.stepSize === 'object' ? opts.stepSize.y : opts.stepSize),
         ]
       }
       prevPosition.current = position
@@ -144,8 +147,8 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
       } else return
 
       if (opts.stepSize) {
-        x = getNearestScale(x, opts.stepSize)
-        y = getNearestScale(y, opts.stepSize)
+        x = getNearestScale(x, typeof opts.stepSize === 'object' ? opts.stepSize.x : opts.stepSize)
+        y = getNearestScale(y, typeof opts.stepSize === 'object' ? opts.stepSize.y : opts.stepSize)
       }
 
       x =
