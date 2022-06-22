@@ -1,7 +1,7 @@
 {
   "name": "use-draggable-hook",
   "author": "dyon21",
-  "main": "./dist/useDraggable.js",
+  "main": "./dist/index.js",
   "version": "1.0.0",
   "license": "MIT",
   "keywords": [
