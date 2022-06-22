@@ -31,8 +31,8 @@ Try it on Codesandbox:
 
 ## Interface & Options
 ```typescript
-export type TUseDraggable = <T extends HTMLElement>(
-  options?: IOptions
+export type UseDraggable = <T extends HTMLElement>(
+  options?: DraggableOptions
 ) => {
   /** target element ref  */
   target: React.RefObject<T>
@@ -41,7 +41,7 @@ export type TUseDraggable = <T extends HTMLElement>(
   /** function to set a new position value. */
   setPosition: (position: [number, number], transition?: string) => void
 }
-export interface IOptions {
+export interface DraggableOptions {
   /** use Event.preventDefault with the touchmove events */
   prevent?: boolean
   /** listen touch events */
@@ -58,10 +58,12 @@ export interface IOptions {
     y?: { max?: number; min?: number }
   }
   /** position step size */
-  stepSize?: number | {
-    x: number
-    y: number
-  }
+  stepSize?:
+    | number
+    | {
+        x: number
+        y: number
+      }
   /** start callback */
   onStart?: (
     target: React.RefObject<HTMLElement>,
@@ -81,6 +83,7 @@ export interface IOptions {
     setPosition: (position: [number, number], transition?: string) => void
   ) => void
 }
+
 const defaultOptions = {
   prevent: true,
   touch: true,

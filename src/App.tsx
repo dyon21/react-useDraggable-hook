@@ -1,5 +1,5 @@
 import './App.css'
-import useDraggable from './useDraggable'
+import useDraggable from './lib/useDraggable'
 
 function App() {
   const { target, position } = useDraggable<HTMLDivElement>()

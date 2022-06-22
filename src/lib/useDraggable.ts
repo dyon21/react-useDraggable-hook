@@ -1,57 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { DraggableOptions, UseDraggable } from './types'
 import { clamp, getNearestScale } from './utils'
 
-export interface IOptions {
-  /** use Event.preventDefault with the touchmove events */
-  prevent?: boolean
-  /** listen touch events */
-  touch?: boolean
-  /** listen mouse events */
-  mouse?: boolean
-  /** dragging direction */
-  direction?: 'vertical' | 'horizontal' | 'both'
-  /** set css transform */
-  setCSS?: boolean
-  /** max dragging distance */
-  maxDistance?: {
-    x?: { max?: number; min?: number }
-    y?: { max?: number; min?: number }
-  }
-  /** position step size */
-  stepSize?: number | {
-    x: number
-    y: number
-  }
-  /** start callback */
-  onStart?: (
-    target: React.RefObject<HTMLElement>,
-    position: [number, number],
-    setPosition: (position: [number, number], transition?: string) => void
-  ) => void
-  /** move callback */
-  onMove?: (
-    target: React.RefObject<HTMLElement>,
-    position: [number, number],
-    setPosition: (position: [number, number], transition?: string) => void
-  ) => void
-  /** end callback */
-  onEnd?: (
-    target: React.RefObject<HTMLElement>,
-    position: [number, number],
-    setPosition: (position: [number, number], transition?: string) => void
-  ) => void
-}
-export type TUseDraggable = <T extends HTMLElement>(
-  options?: IOptions
-) => {
-  /** target element ref  */
-  target: React.RefObject<T>
-  /** position state [x, y] */
-  position: [number, number]
-  /** function to set a new position value. */
-  setPosition: (position: [number, number], transition?: string) => void
-}
 const defaultOptions = {
   prevent: true,
   touch: true,
@@ -67,8 +18,8 @@ const defaultOptions = {
   onMove: function () {},
   onEnd: function () {},
 }
-const useDraggable: TUseDraggable = <T extends HTMLElement>(
-  options?: IOptions
+const useDraggable: UseDraggable = <T extends HTMLElement>(
+  options?: DraggableOptions
 ) => {
   const opts = useMemo(() => {
     return {
@@ -87,8 +38,14 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
     (position: [number, number], transition?: string) => {
       if (opts.stepSize) {
         position = [
-          getNearestScale(position[0], typeof opts.stepSize === 'object' ? opts.stepSize.x : opts.stepSize),
-          getNearestScale(position[1], typeof opts.stepSize === 'object' ? opts.stepSize.y : opts.stepSize),
+          getNearestScale(
+            position[0],
+            typeof opts.stepSize === 'object' ? opts.stepSize.x : opts.stepSize
+          ),
+          getNearestScale(
+            position[1],
+            typeof opts.stepSize === 'object' ? opts.stepSize.y : opts.stepSize
+          ),
         ]
       }
       prevPosition.current = position
@@ -147,8 +104,14 @@ const useDraggable: TUseDraggable = <T extends HTMLElement>(
       } else return
 
       if (opts.stepSize) {
-        x = getNearestScale(x, typeof opts.stepSize === 'object' ? opts.stepSize.x : opts.stepSize)
-        y = getNearestScale(y, typeof opts.stepSize === 'object' ? opts.stepSize.y : opts.stepSize)
+        x = getNearestScale(
+          x,
+          typeof opts.stepSize === 'object' ? opts.stepSize.x : opts.stepSize
+        )
+        y = getNearestScale(
+          y,
+          typeof opts.stepSize === 'object' ? opts.stepSize.y : opts.stepSize
+        )
       }
 
       x =
