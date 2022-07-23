@@ -183,3 +183,5 @@ const useDraggable: UseDraggable = <T extends HTMLElement>(
 }
 
 export default useDraggable
+
+export type { DraggableOptions, UseDraggable } from './types'
